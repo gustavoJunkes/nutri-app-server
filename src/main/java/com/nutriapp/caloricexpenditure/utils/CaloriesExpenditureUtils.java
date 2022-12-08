@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Contains all the methods and logic to attend to demmands related to calories expenditure.
+ * Contains all the methods and logic related to calories expenditure.
  * This class should not contain any business logic, only the calories expenditure related logic
  * */
 @Service
@@ -21,6 +21,7 @@ public class CaloriesExpenditureUtils {
 
         // search how much will spend in a minute
         double spentPerMinute = 10; // needs to search
+
         // multiply by minutes
         toReturn = spentPerMinute * minutes;
 

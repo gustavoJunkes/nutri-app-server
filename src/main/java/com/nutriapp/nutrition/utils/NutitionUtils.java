@@ -3,7 +3,7 @@ package com.nutriapp.nutrition.utils;
 import org.springframework.stereotype.Service;
 
 /**
- * Contains all the methods and logic to attend to demmands related to nutrition.
+ * Contains all the methods and logic related to nutrition.
  * This class should not contain any business logic, only the nutrition related logic
  * */
 @Service
