@@ -1,5 +1,6 @@
 package com.nutriapp.caloricexpenditure.utils;
 
+import com.nutriapp.domain.Exercise;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -93,9 +94,19 @@ public class CaloriesExpenditureUtils {
     }
 
     /**
-     * Process which and how much exercises are necessary to spend the given calories, respecting the accepted exercises list
+     * Process which and how much exercises are necessary to spend the given calories, respecting the choosen exercises list
      * */
-    public void processExercisesToSpendGivenCalories(double calories, String[] acceptedExercises) {
+    public void processExercisesToSpendGivenCalories(double calories, List<Exercise> desiredExercises) {
+        // separate calories into exercises
+        // calculate how much of each exercise
 
+        // distribuir calorias em atividades, de momento distribuir de igual pra igual
+        double caloriesPerExercise = calories / desiredExercises.size();
+
+        for (Exercise exercise: desiredExercises) {
+            // calcular intensidade necessária
+            // calcular tempo necessário
+            // add exercise to return
+        }
     }
 }
