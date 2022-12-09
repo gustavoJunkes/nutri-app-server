@@ -17,11 +17,11 @@ public class CaloriesExpenditureUtils {
      * Calculate how much calories in a cardio exercise
      * @returns the calories spent in the given cardio
      * */
-    public double calculateCaloricExpeditureInCardio(double kmPerMinute, double minutes) {
+    public double calculateCaloricExpeditureInCardio(double speed, double minutes, double weight) {
         double toReturn = 0;
 
-        // search how much will spend in a minute
-        double spentPerMinute = 10; // needs to search
+        // calculate how much will spend in a minute
+        double spentPerMinute = calculateCaloriesSpendPerMinuteCardio(speed, weight); // needs to search
 
         // multiply by minutes
         toReturn = spentPerMinute * minutes;
@@ -30,19 +30,38 @@ public class CaloriesExpenditureUtils {
     }
 
     /**
-     * Calculate how much cardio needs to do with the given intensity to spend the given calories
+     * Calculate how much calories are spent in a minute considering the given speed (in km/h) and the weight (in kg)
      * */
-    public void calculateCardioForCaloriesAndIntensity(double calories, double intensity /*in km per minute*/) {
-        
+    public double calculateCaloriesSpendPerMinuteCardio(double speed, double weight) {
+        double toReturn = 0;
+
+        toReturn = speed * weight * 0.0175;
+
+        return toReturn;
+    }
+
+    /**
+     * Calculate how much cardio needs to do with the given intensity (in km/h) to spend the given calories
+     * */
+    public double calculateCardioForCaloriesAndIntensity(double calories, double speed /*in km/h*/, double weight) {
+        double toReturn = (speed * weight * 0.0175) / calories;
+        return toReturn;
     }
 
     /**
      * Calculate how much cardio needs to do with the list of intensities to spend the given calories.
      *
-     * @returns a map with the key -> calories and the value -> intensity
+     * @returns a hashMap with the key -> intensity and the value -> time of cardio
      * */
-    public Map<Double, Double> calculateCardioForCalories(double calories, double intensity /*in km per minute*/) {
-        return new HashMap<Double, Double>();
+    public Map<Double, Double> calculateCardioForCalories(double calories, double[] speeds, double weight) {
+        Map<Double, Double> toReturn = new HashMap<>();
+
+        for (int i = 0; i < speeds.length; i++) {
+           double timeOfCardio = this.calculateCardioForCaloriesAndIntensity(calories, speeds[i], weight);
+           toReturn.put(speeds[i], timeOfCardio);
+        }
+
+        return toReturn;
     }
 
     /**
