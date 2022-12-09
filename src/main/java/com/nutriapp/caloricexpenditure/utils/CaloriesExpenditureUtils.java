@@ -80,12 +80,16 @@ public class CaloriesExpenditureUtils {
     /**
      * Calculate the daily total caloric expenditure using the known formula and considering other activities that spend energy
      * */
-    public void calculateDailyTotalCaloricExpenditure(boolean isMale, double weight, double height, double age, List<String> activities /*activities in the day*/) {
+    public double calculateDailyTotalCaloricExpenditure(boolean isMale, double weight, double height, double age,  double[] activitiesSpenditure) {
         double bmr = this.calculateDailyBasalCaloricExpenditure(isMale, weight, height, age);
 
-        // calcular outros gastos de energia
+        double totalCalories = bmr;
 
-        // somar ao restante
+        for (double activitieSpenditure: activitiesSpenditure) {
+            totalCalories += activitieSpenditure;
+        }
+
+        return totalCalories;
     }
 
     /**
