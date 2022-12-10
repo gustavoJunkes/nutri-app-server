@@ -1,6 +1,9 @@
 package com.nutriapp.nutrition.utils;
 
+import com.nutriapp.domain.Food;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Contains all the methods and logic related to nutrition.
@@ -41,5 +44,20 @@ public class NutitionUtils {
      * */
     public void processDailyMeals(double caloriesSpent, int numberOfMeals, String[] acceptedFoods) {
 
+    }
+    /**
+     *  Separate de daily calories into meals, considering the given number of meals
+     * */
+    public double separateCaloriesInMeals(double dailyCalories, int numberOfMeals) {
+        double caloriesPerMeal = dailyCalories / numberOfMeals;
+
+        return caloriesPerMeal;
+    }
+
+    public void processEachDailyMeal(double caloriesPerMeal, int numberOfMeals, List<Food> desiredFoods, double protein, double fat, double cardio) {
+
+        for(int i = 0; i < numberOfMeals; i++) {
+
+        }
     }
 }
