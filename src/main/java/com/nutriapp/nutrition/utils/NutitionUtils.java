@@ -4,7 +4,9 @@ import com.nutriapp.domain.DayTimeEnum;
 import com.nutriapp.domain.Food;
 import com.nutriapp.domain.Meal;
 import com.nutriapp.domain.MealFood;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -18,6 +20,32 @@ import java.util.Set;
  * */
 @Service
 public class NutitionUtils {
+
+
+    // TODO: 19/12/2022 O sistema deve calcular quantas calorias diárias o usuário
+    //  deve consumir.
+    //  Depois, quanto de gordura, proteína e carboidrato.
+    //  Depois, separar essas gorduras, proteinas e carboidratos em um número de refeições.
+    //  A partir disso, deve escolher alguns alimentos (dentre os selecionados pelo usuário) para montar a refeição.
+    //  Depois, calcular quanto de cada um é necessário para bater a proteína. Depois o mesmo para gordura e carboidrato.
+    //  Nesse momento temos cada refeição com seus devidos alimentos e quantidades.
+    //  Um dos problemas que devem surgir deve ser a combinação esquista de comidas, como por exemplo sorvete e arroz.
+    //  Outro problema é a divisão igual de quantidade entre cada alimento.
+    //  Vai ser um desafio combinar os alimentos em quantidade certa de forma a bater a quantidade ideal de cada coisa (prote, carbo e gord) sem extrapolar nada
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
