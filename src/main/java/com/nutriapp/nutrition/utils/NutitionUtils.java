@@ -1,9 +1,16 @@
 package com.nutriapp.nutrition.utils;
 
+import com.nutriapp.domain.DayTimeEnum;
 import com.nutriapp.domain.Food;
+import com.nutriapp.domain.Meal;
+import com.nutriapp.domain.MealFood;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Contains all the methods and logic related to nutrition.
@@ -54,10 +61,118 @@ public class NutitionUtils {
         return caloriesPerMeal;
     }
 
+    /**
+     * Process each meal of the day, considering the given calories, desired foods and ideal period for each meal
+     * */
     public void processEachDailyMeal(double caloriesPerMeal, int numberOfMeals, List<Food> desiredFoods, double protein, double fat, double cardio) {
+        // TODO: 10/12/2022 consider needed protein, fat and carbo in the meals
+
+        List<DayTimeEnum> mealsPeriod =  processMealTime(numberOfMeals);
 
         for(int i = 0; i < numberOfMeals; i++) {
-
+            Meal meal = new Meal();
+            meal.setMealPeriod(mealsPeriod.get(i));
+            processDesiredFoodsInMealFoods(desiredFoods, caloriesPerMeal, meal);
         }
+    }
+
+    /**
+     * Returns an ordenated list of periods for each meal, based on the number of meals in a day
+     * */
+    public List<DayTimeEnum> processMealTime(int numberOfMeals) {
+        List<DayTimeEnum> mealsPeriod = new ArrayList<>();
+        switch (numberOfMeals) {
+            case 3:
+                mealsPeriod = List.of(DayTimeEnum.BREAKFAST, DayTimeEnum.LUNCH, DayTimeEnum.DINNER);
+                break;
+            case 4:
+                mealsPeriod = List.of(DayTimeEnum.BREAKFAST, DayTimeEnum.LUNCH, DayTimeEnum.AFTERNOON_EARLY, DayTimeEnum.DINNER);
+                break;
+            case 5:
+                mealsPeriod = List.of(DayTimeEnum.BREAKFAST, DayTimeEnum.MORNING_EARLY, DayTimeEnum.LUNCH, DayTimeEnum.AFTERNOON_LATE, DayTimeEnum.DINNER);
+                break;
+            case 6:
+                mealsPeriod = List.of(DayTimeEnum.BREAKFAST, DayTimeEnum.MORNING_EARLY, DayTimeEnum.LUNCH, DayTimeEnum.AFTERNOON_EARLY, DayTimeEnum.AFTERNOON_LATE, DayTimeEnum.DINNER);
+                break;
+            case 7:
+                mealsPeriod = List.of(DayTimeEnum.BREAKFAST, DayTimeEnum.MORNING_EARLY, DayTimeEnum.MORNING_LATE, DayTimeEnum.LUNCH, DayTimeEnum.AFTERNOON_EARLY, DayTimeEnum.AFTERNOON_LATE, DayTimeEnum.DINNER);
+                break;
+            case 8:
+                mealsPeriod = List.of(DayTimeEnum.BREAKFAST, DayTimeEnum.MORNING_EARLY, DayTimeEnum.MORNING_LATE, DayTimeEnum.LUNCH, DayTimeEnum.AFTERNOON_EARLY, DayTimeEnum.AFTERNOON_LATE, DayTimeEnum.NIGHT_EARLY, DayTimeEnum.DINNER);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid number of meals in a day");
+        }
+        return mealsPeriod;
+    }
+
+    /**
+     * Separate the foods for the given meal in meal foods, considering the day period
+     * */
+    public void processDesiredFoodsInMealFoods(List<Food> foods, double caloriesPerMeal, Meal meal) {
+        // verify time of the day of the meal, and based on thad choose the more adequated foods.
+        // choose max of 3 fruits and separate them equaly based on calories.
+
+        List<Food> foodsForMeal = new ArrayList<>();
+
+        switch (meal.getMealPeriod()) {
+            case MORNING_EARLY:
+                foodsForMeal = getBestFoodsByPeriod(foods, DayTimeEnum.MORNING_EARLY);
+                break;
+            case BREAKFAST:
+                foodsForMeal = getBestFoodsByPeriod(foods, DayTimeEnum.BREAKFAST);
+                break;
+            case MORNING_LATE:
+                foodsForMeal = getBestFoodsByPeriod(foods, DayTimeEnum.MORNING_LATE);
+                break;
+            case LUNCH:
+                foodsForMeal = getBestFoodsByPeriod(foods, DayTimeEnum.LUNCH);
+                break;
+            case AFTERNOON_EARLY:
+                foodsForMeal = getBestFoodsByPeriod(foods, DayTimeEnum.AFTERNOON_EARLY);
+                break;
+            case AFTERNOON_LATE:
+                foodsForMeal = getBestFoodsByPeriod(foods, DayTimeEnum.AFTERNOON_LATE);
+                break;
+            case NIGHT_EARLY:
+                foodsForMeal = getBestFoodsByPeriod(foods, DayTimeEnum.NIGHT_EARLY);
+                break;
+            case DINNER:
+                foodsForMeal = getBestFoodsByPeriod(foods, DayTimeEnum.DINNER);
+                break;
+            case NIGHT_LATE:
+                foodsForMeal = getBestFoodsByPeriod(foods, DayTimeEnum.NIGHT_LATE);
+                break;
+        }
+        // choose the best 3 foods
+        foodsForMeal = foodsForMeal.size() >= 3 ? foodsForMeal.subList(0, 3) : foodsForMeal.subList(0, foodsForMeal.size() - 1);
+
+        // separate them in calories
+        double caloriesForFood = caloriesPerMeal / foodsForMeal.size();
+
+        Set<MealFood> mealFoods = new HashSet<>();
+
+        foodsForMeal.forEach(food -> {
+            MealFood mealFood = new MealFood(food, caloriesForFood);
+            mealFoods.add(mealFood);
+        });
+        // TODO: 10/12/2022 persist the meal foods in database
+
+        meal.setMealFoods(mealFoods);
+
+        // TODO: 10/12/2022 persist the meal in database
+    }
+
+    /**
+     * Filter the foods list based on the given day Period
+     * */
+    public List<Food> getBestFoodsByPeriod(List<Food> foods, DayTimeEnum dayPeriod) {
+        List<Food> foodsToReturn = new ArrayList<>();
+
+        for(Food food: foods) {
+            if (food.getBestEatPeriod().equals(dayPeriod))
+                foodsToReturn.add(food);
+        }
+        return foodsToReturn;
     }
 }
