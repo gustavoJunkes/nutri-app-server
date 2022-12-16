@@ -64,16 +64,19 @@ public class NutitionUtils {
     /**
      * Process each meal of the day, considering the given calories, desired foods and ideal period for each meal
      * */
-    public void processEachDailyMeal(double caloriesPerMeal, int numberOfMeals, List<Food> desiredFoods, double protein, double fat, double cardio) {
+    public List<Meal> processEachDailyMeal(double caloriesPerMeal, int numberOfMeals, List<Food> desiredFoods, double protein, double fat, double cardio) {
         // TODO: 10/12/2022 consider needed protein, fat and carbo in the meals
 
         List<DayTimeEnum> mealsPeriod =  processMealTime(numberOfMeals);
+        List<Meal> dailyMeals = new ArrayList<>();
 
         for(int i = 0; i < numberOfMeals; i++) {
             Meal meal = new Meal();
             meal.setMealPeriod(mealsPeriod.get(i));
             processDesiredFoodsInMealFoods(desiredFoods, caloriesPerMeal, meal);
+            dailyMeals.add(meal);
         }
+        return dailyMeals;
     }
 
     /**
