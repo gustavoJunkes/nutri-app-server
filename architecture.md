@@ -1,5 +1,5 @@
 # Arquitetura
 
-## Reativa (Spring Webflux)
+## ~Reativa (Spring Webflux)~
 
 ## Segurança (Spring Security)
