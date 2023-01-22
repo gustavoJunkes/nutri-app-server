@@ -6,7 +6,6 @@ import com.nutriapp.domain.Meal;
 import com.nutriapp.domain.MealFood;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import java.util.Set;
 @Service
 public class NutitionUtils {
 
+    // TODO: 11/12/2022 A PRIORIDADE É PERMITIR SALVAR AS REFEIÇÕES DIÁRIAS
 
     // TODO: 19/12/2022 O sistema deve calcular quantas calorias diárias o usuário
     //  deve consumir.
