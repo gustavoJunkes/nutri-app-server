@@ -1,11 +1,10 @@
 package com.nutriapp.resource;
 
-import com.nutriapp.auth.User;
 import com.nutriapp.auth.UserService;
 import com.nutriapp.dto.UserDto;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,21 +15,12 @@ public class UserResource {
     UserService userService;
 
     @PostMapping("/save")
-    public ResponseEntity<User> save(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password
+//    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<UserDto> save(
+           @RequestBody UserDto userDto
             ) {
-
-        User user = User.builder()
-                .username(username)
-                .password(password)
-                .build();
-
-        user = userService.save(user);
-
-        System.out.println(user.getUsername());
-
-        return ResponseEntity.ok(user);
+        userDto = userService.save(userDto);
+        return ResponseEntity.ok(userDto);
     }
 
 
