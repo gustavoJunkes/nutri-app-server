@@ -1,28 +1,25 @@
 package com.nutriapp.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.nutriapp.domain.Authority;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 
 
 //@Value
 @Builder
 @Entity(name = "tb_user")
 @NoArgsConstructor
+@AllArgsConstructor
 //@Getter
-//@Setter
+@Setter
 public class User implements UserDetails {
     private static final long serialVersionUID = 2396654715019746670L;
 
@@ -30,8 +27,13 @@ public class User implements UserDetails {
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
+
+    @Column(unique = true)
     private String username;
     private String password;
+
+    @ManyToMany
+    private List<Authority> authorities;
 
     public User(UUID id, String username, String password){
         this.id = id;
@@ -43,8 +45,8 @@ public class User implements UserDetails {
 
     @JsonIgnore
     @Override
-    public Collection<GrantedAuthority> getAuthorities() {
-        return new ArrayList<>();
+    public List<Authority> getAuthorities() {
+        return this.authorities;
     }
 
     @JsonIgnore
@@ -83,6 +85,28 @@ public class User implements UserDetails {
 
     public UUID getId(){
         return id;
+    }
+
+    @Deprecated
+    public User addRole(String... roles) {
+        List<GrantedAuthority> authorities = new ArrayList(roles.length);
+        String[] var3 = roles;
+        int var4 = roles.length;
+
+        for(int var5 = 0; var5 < var4; ++var5) {
+            String role = var3[var5];
+            Assert.isTrue(!role.startsWith("ROLE_"), () -> {
+                return role + " cannot start with ROLE_ (it is automatically added)";
+            });
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+        }
+//        this.authorities = authorities;
+        return this;
+    }
+
+    public User addAuthority(Authority authority) {
+        this.authorities.add(authority);
+        return this;
     }
 
 }
