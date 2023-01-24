@@ -21,6 +21,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 
+/**
+ * CORRETO
+ * */
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -38,25 +41,32 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
+
+    /**
+     * Estou sendo trancado pelo AuthorizationFilter, suspeito que tenha alguma conf ou minha arquitetura esta incompleta, pois ele verifica se já estou autenticado
+     *
+     * */
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-        final String auhHeader = request.getHeader("AUTHORIZAION");
+        final String authHeader = request.getHeader("AUTHORIZATION");
         final String userEmail;
         final String jwtToken;
 
-        if (auhHeader == null || !auhHeader.startsWith("Baerer")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer")) {
             filterChain.doFilter(request, response);
             return;
         }
         // position of token in char array that contais the baerer token
-        jwtToken = auhHeader.substring(7);
+        jwtToken = authHeader.substring(7);
 
         userEmail = tokenService.extractUsernameFromToken(jwtToken);
 
-        if (userEmail != null && SecurityContextHolder.getContext() == null) {
+        var context = SecurityContextHolder.getContext();
+        // TODO: 19/01/2023 Verify context properly, it is always going to return an object with null references but never actually null.
+        if (userEmail != null /*&& SecurityContextHolder.getContext() == null*/) {
             User user = (User) userDetailsService.loadUserByUsername(userEmail);
             boolean isTokenValid = tokenService.isTokenValid(jwtToken, user);
 
