@@ -4,9 +4,7 @@ import java.util.Map;
 
 public interface TokenService {
 
-    @Deprecated
-    String newToken(final Map<String, String> attributes);
-    Map<String, String> verify(String token);
+//    Map<String, String> verify(String token);
 
     boolean isTokenValid(String token, User user);
 
