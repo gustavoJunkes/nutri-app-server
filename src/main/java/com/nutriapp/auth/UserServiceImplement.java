@@ -1,34 +1,37 @@
 package com.nutriapp.auth;
 
-import com.nutriapp.auth.User;
-import com.nutriapp.auth.UserService;
+import com.nutriapp.domain.Authority;
+import com.nutriapp.dto.UserDto;
 import com.nutriapp.repository.UserRepository;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import com.nutriapp.service.authority.AuthorityService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Primary
 final class UserServiceImpl implements UserService {
 
-    // TODO: 04/01/2023 retrieve users from database
-    Map<UUID, User> users = new HashMap<>()
-    {{
-        put(null, new User(null,"matt","idg"));
-    }};
+
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    @Autowired
+    private final UserRepository userRepository;
+
+    @Autowired
+    private final AuthorityService authorityService;
 
     @Bean
     public UserDetailsService users() {
@@ -47,27 +50,58 @@ final class UserServiceImpl implements UserService {
         return new InMemoryUserDetailsManager(user, admin);
     }
 
-    @Autowired
-    private final UserRepository userRepository;
-
     @Override
     public User save(final User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return this.userRepository.save(user);
     }
 
     @Override
+    public UserDto save(UserDto userDto) {
+
+        if (userDto.getAuthorities().isEmpty()) {
+            Authority authority = new Authority();
+            authority.setRole("ROLE_USER");
+            authorityService.save(authority);
+        }
+
+        userDto.getAuthorities()
+                        .forEach(authority -> {
+                           if (!authorityService.exists(authority))
+                               throw new IllegalArgumentException("The given authority does not exist!");
+                        });
+
+        User savedUser = User.builder()
+                .username(userDto.getUsername())
+                .password(userDto.getPassword())
+                .authorities(userDto.getAuthorities())
+                .build()
+                .addRole("ADMIN", "USER");
+
+        savedUser = this.save(savedUser);
+
+        return UserDto.builder()
+                .username(savedUser.getUsername())
+                .password(savedUser.getPassword())
+                .authorities(savedUser.getAuthorities())
+                .build();
+    }
+
+    @Override
     public Optional<User> find(final String id) {
-        return ofNullable(users.get(id));
+        return ofNullable(null);
     }
 
     @Override
     public Optional<User> findByUsername(final String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findFirstByUsername(username);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
+        return userRepository.findFirstByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
+
+
 }
