@@ -20,13 +20,13 @@ import static java.util.Objects.requireNonNull;
 
 @Service
 //@FieldDefaults(level = PRIVATE, makeFinal = true)
-final class JWTTokenService implements Clock, TokenService {
+final class JWTTokenService implements TokenService {
     private static final GzipCompressionCodec COMPRESSION_CODEC = new GzipCompressionCodec();
 
     String issuer;
 
     @Deprecated
-    String secretKey;
+    String secretKey = "secret";
 
     private final String jwtSigningKey = "secretKey";
 
@@ -37,26 +37,37 @@ final class JWTTokenService implements Clock, TokenService {
 //        this.secretKey = BASE64.encode("www.infoworld.com");
 //    }
 
-
+    /**
+     * CORRETO
+     * */
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, user);
     }
 
-
-    @Deprecated
-    @Override
-    public String newToken(final Map<String, String> attributes) {
-        final DateTime now = DateTime.now();
-        final Claims claims = Jwts.claims().setIssuer(issuer).setIssuedAt(now.toDate());
-
-        claims.putAll(attributes);
-
-        return Jwts.builder().setClaims(claims).signWith(HS256, secretKey).compressWith(COMPRESSION_CODEC)
-                .compact();
+    /**
+     * CORRETO
+     * */
+    public String generateToken(User user, Map<String, Object> claims) {
+        return createToken(claims, user);
     }
 
-    @Override
+//    @Deprecated
+//    @Override
+//    public String newToken(final Map<String, String> attributes) {
+//        final DateTime now = DateTime.now();
+//        final Claims claims = Jwts.claims().setIssuer(issuer).setIssuedAt(now.toDate());
+//
+//        claims.putAll(attributes);
+//
+//        return Jwts.builder().setClaims(claims).signWith(HS256, secretKey).compressWith(COMPRESSION_CODEC)
+//                .compact();
+//    }
+
+//    @Override
+    /**
+     * CORRETO
+     * */
     public String createToken(Map<String, Object> claims, User user) {
         final String toReturn = Jwts.builder()
                 .setClaims(claims)
@@ -69,29 +80,41 @@ final class JWTTokenService implements Clock, TokenService {
         return toReturn;
     }
 
-    @Override
-    public Map<String, String> verify(final String token) {
-        final JwtParser parser = Jwts.parser().requireIssuer(issuer).setClock(this).setSigningKey(secretKey);
-        return parseClaims(() -> parser.parseClaimsJws(token).getBody());
-    }
+//    @Override
+//    public Map<String, String> verify(final String token) {
+//        final JwtParser parser = Jwts.parser().requireIssuer(issuer).setClock(this).setSigningKey(secretKey);
+//        return parseClaims(() -> parser.parseClaimsJws(token).getBody());
+//    }
 
-    @Override
+    /**
+     * CORRETO
+     * */
+//    @Override
     public boolean isTokenValid(String token, User user) {
         String username = extractUsernameFromToken(token); // TODO: 04/01/2023 implement method to extract username from token
         boolean isValid = username.equals(user.getUsername()) && !isTokenExpired(token);
         return isValid;
     }
 
+    /**
+     * CORRETO
+     * */
     public String extractUsernameFromToken(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+    /**
+     * CORRETO
+     * */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         Claims claims = extractAllClaims(token);
 
         return claimsResolver.apply(claims);
     }
 
+    /**
+     * CORRETO
+     * */
     private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(jwtSigningKey).parseClaimsJws(token).getBody();
     }
@@ -110,7 +133,7 @@ final class JWTTokenService implements Clock, TokenService {
         }
     }
 
-    @Override
+//    @Override
     public Date now() {
         final DateTime now = DateTime.now();
         return now.toDate();
