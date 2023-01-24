@@ -4,12 +4,12 @@ import com.nutriapp.auth.TokenService;
 import com.nutriapp.auth.User;
 import com.nutriapp.auth.UserService;
 import com.nutriapp.dto.AuthenticateDto;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,7 +41,7 @@ public class AuthResource {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<String> authenticate(AuthenticateDto request) {
+    public ResponseEntity<String> authenticate(@RequestBody AuthenticateDto request) {
         this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
