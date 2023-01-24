@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Role;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,7 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Optional.ofNullable;
 
@@ -59,17 +61,20 @@ final class UserServiceImpl implements UserService {
     @Override
     public UserDto save(UserDto userDto) {
 
-        if (userDto.getAuthorities().isEmpty()) {
+        if (Objects.isNull(userDto.getAuthorities()) || userDto.getAuthorities().isEmpty()) {
             Authority authority = new Authority();
             authority.setRole("ROLE_USER");
             authorityService.save(authority);
+            userDto.setAuthorities(List.of(authority));
         }
 
-        userDto.getAuthorities()
-                        .forEach(authority -> {
-                           if (!authorityService.exists(authority))
-                               throw new IllegalArgumentException("The given authority does not exist!");
-                        });
+        if (Objects.nonNull(userDto.getAuthorities())) {
+            userDto.getAuthorities()
+                    .forEach(authority -> {
+                        if (!authorityService.exists(authority))
+                            throw new IllegalArgumentException("The given authority does not exist!");
+                    });
+        }
 
         User savedUser = User.builder()
                 .username(userDto.getUsername())
@@ -80,16 +85,24 @@ final class UserServiceImpl implements UserService {
 
         savedUser = this.save(savedUser);
 
+
+
         return UserDto.builder()
                 .username(savedUser.getUsername())
                 .password(savedUser.getPassword())
-                .authorities(savedUser.getAuthorities())
+//                .authorities(savedUser.getAuthorities())
                 .build();
     }
 
     @Override
     public Optional<User> find(final String id) {
-        return ofNullable(null);
+        Optional<User> user = userRepository.findById(id);
+
+        user.ifPresent(user1 -> {
+            user1.setAuthorities(getUserAuthorities(user.get()));
+        });
+
+        return user;
     }
 
     @Override
@@ -101,6 +114,10 @@ final class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findFirstByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+    }
+
+    public List<Authority> getUserAuthorities(User user) {
+        return authorityService.findAuthoritiesByUser(user);
     }
 
 
