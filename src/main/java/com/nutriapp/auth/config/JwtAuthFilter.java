@@ -2,6 +2,7 @@ package com.nutriapp.auth.config;
 
 import com.nutriapp.auth.TokenService;
 import com.nutriapp.auth.User;
+import com.nutriapp.auth.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +32,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private TokenService tokenService;
 
+    private UserService userService;
+
     @Autowired
     public void setTokenService(TokenService tokenService) {
         this.tokenService = tokenService;
@@ -41,6 +44,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
      * Estou sendo trancado pelo AuthorizationFilter, suspeito que tenha alguma conf ou minha arquitetura esta incompleta, pois ele verifica se já estou autenticado
@@ -71,7 +78,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             boolean isTokenValid = tokenService.isTokenValid(jwtToken, user);
 
             if (isTokenValid) {
-                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, null, userService.getUserAuthorities(user));
                 token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(token);
             }
