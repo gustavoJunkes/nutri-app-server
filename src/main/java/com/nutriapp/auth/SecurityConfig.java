@@ -45,12 +45,12 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
-    TokenAuthenticationProvider provider;
-
-    @Autowired
-    public void setProvider(TokenAuthenticationProvider provider) {
-        this.provider = provider;
-    }
+//    TokenAuthenticationProvider provider;
+//
+//    @Autowired
+//    public void setProvider(TokenAuthenticationProvider provider) {
+//        this.provider = provider;
+//    }
 
     private UserService userService;
 
@@ -62,13 +62,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable()) // TODO: 23/01/2023 consider to enable csrf
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/auth/authenticate").permitAll())
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authenticationProvider(authenticationProvider())
-                .httpBasic(Customizer.withDefaults())
+                .authenticationProvider(authenticationProvider())
+//                .httpBasic(Customizer.withDefaults())
+//                .httpBasic().disable()
                 .build();
     }
 
@@ -78,13 +79,13 @@ public class SecurityConfig {
 //        web.ignoring().requestMatchers("/api/v1/auth/authenticate");
 //    }
 
-//    @Bean
-//    public AuthenticationProvider authenticationProvider() {
-//        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-//        authenticationProvider.setUserDetailsService(userDetailsService());
-//        authenticationProvider.setPasswordEncoder(passwordEncoder());
-//        return authenticationProvider;
-//    }
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService());
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+    }
 
     @Bean
     public UserDetailsService userDetailsService() {
