@@ -1,20 +1,22 @@
 package com.nutriapp.dto;
 
 import com.nutriapp.auth.User;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import com.nutriapp.domain.Authority;
+import lombok.*;
+
+import java.util.List;
 
 //@Getter
 //@Setter
 @Builder
+@AllArgsConstructor
 @Data
 public class UserDto {
     private String id;
     private String username;
     private String password;
 
+    private List<Authority> authorities;
 
     public UserDto() {}
 
