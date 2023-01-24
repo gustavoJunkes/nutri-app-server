@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nutriapp.domain.Authority;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,7 +33,7 @@ public class User implements UserDetails {
     private String username;
     private String password;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<Authority> authorities;
 
     public User(UUID id, String username, String password){
@@ -45,8 +46,9 @@ public class User implements UserDetails {
 
     @JsonIgnore
     @Override
-    public List<Authority> getAuthorities() {
+    public List<? extends GrantedAuthority> getAuthorities() {
         return this.authorities;
+//        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @JsonIgnore
