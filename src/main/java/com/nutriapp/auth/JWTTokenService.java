@@ -28,7 +28,7 @@ final class JWTTokenService implements TokenService {
     @Deprecated
     String secretKey = "secret";
 
-    private final String jwtSigningKey = "secretKey";
+    private final String jwtSigningKey = "newSecretKey";
 
 //    JWTTokenService() {
 //        super();
