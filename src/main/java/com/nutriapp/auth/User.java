@@ -2,6 +2,7 @@ package com.nutriapp.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nutriapp.domain.Authority;
+import com.nutriapp.domain.WeeklyMenu;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Fetch;

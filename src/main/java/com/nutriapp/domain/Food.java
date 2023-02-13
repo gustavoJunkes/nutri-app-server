@@ -22,4 +22,5 @@ public class Food {
 
     @Enumerated(EnumType.STRING)
     DayTimeEnum bestEatPeriod;
+
 }

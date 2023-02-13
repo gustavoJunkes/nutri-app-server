@@ -1,11 +1,7 @@
 package com.nutriapp.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.Instant;
@@ -18,6 +14,9 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Meal {
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -26,6 +25,9 @@ public class Meal {
 
     @OneToMany
     private Set<MealFood> mealFoods;
+
+    @ManyToOne
+    private DailyMenu dailyMenu;
 
     private LocalTime mealTime;
     private DayTimeEnum mealPeriod;

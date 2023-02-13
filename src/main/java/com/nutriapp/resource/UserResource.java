@@ -15,7 +15,6 @@ public class UserResource {
     UserService userService;
 
     @PostMapping("/save")
-//    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<UserDto> save(
            @RequestBody UserDto userDto
             ) {
