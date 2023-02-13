@@ -1,4 +1,4 @@
-package com.nutriapp.dto;
+package com.nutriapp.dto.auth;
 
 import lombok.Builder;
 import lombok.Data;
