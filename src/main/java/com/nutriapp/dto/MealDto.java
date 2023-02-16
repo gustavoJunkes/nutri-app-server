@@ -18,6 +18,7 @@ import java.util.UUID;
 public class MealDto {
 
     private UUID id;
+    private String description;
     private Set<MealFood> mealFoods;
     private LocalTime mealTime;
     private DayTimeEnum mealPeriod;

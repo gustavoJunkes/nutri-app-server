@@ -23,6 +23,8 @@ public class Meal {
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
+    private String description;
+
     @OneToMany
     private Set<MealFood> mealFoods;
 

@@ -71,6 +71,7 @@ public class DailyMenuService {
                 .date(dailyMenu.get().getDate())
                 .weekDay(dailyMenu.get().getWeekDay())
                 .meals(meals)
+                .weeklyMenu(WeeklyMenuDto.builder().id(dailyMenu.get().getWeeklyMenu().getId()).build())
                 .build();
     }
 

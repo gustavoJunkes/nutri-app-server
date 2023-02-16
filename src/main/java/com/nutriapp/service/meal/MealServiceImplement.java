@@ -29,6 +29,7 @@ public class MealServiceImplement implements MealService {
         mealRepository.findAllByDailyMenu(dailyMenu).ifPresent(meals ->
                meals.forEach(meal -> {
                    mealDtos.add(MealDto.builder()
+                                   .description(meal.getDescription())
                                    .mealPeriod(meal.getMealPeriod())
                                    .mealTime(meal.getMealTime())
                                    .mealFoods(meal.getMealFoods())
@@ -50,6 +51,7 @@ public class MealServiceImplement implements MealService {
                 .dailyMenu(DailyMenu.builder()
                         .id(mealDto.getDailyMenu().getId()).build())
                 .mealPeriod(mealDto.getMealPeriod())
+                .description(mealDto.getDescription())
                 .mealTime(mealDto.getMealTime())
                 .mealFoods(mealDto.getMealFoods())
                 .build();
