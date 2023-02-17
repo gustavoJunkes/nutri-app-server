@@ -68,6 +68,7 @@ public class DailyMenuService {
         val meals = mealService.findByDailyMenu(dailyMenu.get());
 
         return DailyMenuDto.builder()
+                .id(dailyMenu.get().getId())
                 .date(dailyMenu.get().getDate())
                 .weekDay(dailyMenu.get().getWeekDay())
                 .meals(meals)

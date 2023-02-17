@@ -7,12 +7,11 @@ import com.nutriapp.dto.DailyMenuDto;
 import com.nutriapp.dto.MealDto;
 import com.nutriapp.repository.MealRepository;
 import com.nutriapp.service.mealFood.MealFoodService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class MealServiceImplement implements MealService {
@@ -24,7 +23,7 @@ public class MealServiceImplement implements MealService {
 
     public List<MealDto> findByDailyMenu(DailyMenu dailyMenu) {
 
-        List<MealDto> mealDtos = Collections.emptyList();
+        List<MealDto> mealDtos = new ArrayList<>();
 
         mealRepository.findAllByDailyMenu(dailyMenu).ifPresent(meals ->
                meals.forEach(meal -> {
@@ -33,8 +32,10 @@ public class MealServiceImplement implements MealService {
                                    .mealPeriod(meal.getMealPeriod())
                                    .mealTime(meal.getMealTime())
                                    .mealFoods(meal.getMealFoods())
+                                   .dailyMenu(DailyMenuDto.builder().id(dailyMenu.getId()).build())
                            .build());
                }));
+
         return mealDtos;
     }
 
@@ -56,7 +57,9 @@ public class MealServiceImplement implements MealService {
                 .mealFoods(mealDto.getMealFoods())
                 .build();
 
-        mealDto.getMealFoods().forEach(mealFoodService::save);
+        Optional.ofNullable(mealDto.getMealFoods()).ifPresent(mealFoods -> {
+            mealFoods.forEach(mealFoodService::save);
+        });
 
         meal = mealRepository.save(meal);
 
@@ -66,6 +69,8 @@ public class MealServiceImplement implements MealService {
                 .mealFoods(meal.getMealFoods())
                 .mealTime(meal.getMealTime())
                 .mealPeriod(meal.getMealPeriod())
+                .id(meal.getId())
+                .description(meal.getDescription())
                 .build();
     }
 
