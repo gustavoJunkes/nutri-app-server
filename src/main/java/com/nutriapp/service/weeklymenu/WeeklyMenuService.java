@@ -28,10 +28,9 @@ public class WeeklyMenuService {
     }
 
     public WeeklyMenuDto findByDate(LocalDate date) {
-
         User user = (User) authenticationFacade.getAuthentication().getPrincipal();
 
-        var weeklyMenuOpt= weeklyMenuRepository.findFirstByBeginDateLessThanEqualAndEndDateGreaterThanEqual(date, date); //(newWithDateAndUser(date, user));
+        var weeklyMenuOpt = weeklyMenuRepository.findFirstByBeginDateLessThanEqualAndEndDateGreaterThanEqualAndUser(date, date, user); //(newWithDateAndUser(date, user));
 
         if (weeklyMenuOpt.isEmpty()) {
             weeklyMenuOpt = Optional.of(newWithDateAndUser(date, user));

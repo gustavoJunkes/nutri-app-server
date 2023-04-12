@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FoodServiceImplement implements FoodService {
@@ -27,6 +28,7 @@ public class FoodServiceImplement implements FoodService {
 
         Food food = Food.builder()
                 .description(foodDto.getDescription())
+                .unity(foodDto.getUnity())
                 .build();
 
         food = foodRepository.save(food);
@@ -34,5 +36,16 @@ public class FoodServiceImplement implements FoodService {
         foodDto.setId(String.valueOf(food.getId()));
 
         return foodDto;
+    }
+
+    public List<FoodDto> list() {
+        var toReturn = foodRepository.findAll().stream().map(food -> FoodDto
+                        .builder()
+                        .id(String.valueOf(food.getId()))
+                        .description(food.getDescription())
+                        .unity(food.getUnity())
+                        .build())
+                .collect(Collectors.toList());
+        return toReturn;
     }
 }

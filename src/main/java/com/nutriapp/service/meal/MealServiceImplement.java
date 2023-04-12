@@ -7,6 +7,7 @@ import com.nutriapp.dto.DailyMenuDto;
 import com.nutriapp.dto.MealDto;
 import com.nutriapp.repository.MealRepository;
 import com.nutriapp.service.mealFood.MealFoodService;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,9 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@AllArgsConstructor
 public class MealServiceImplement implements MealService {
 
-    @Autowired
     private MealRepository mealRepository;
 
     private MealFoodService mealFoodService;
@@ -28,6 +29,7 @@ public class MealServiceImplement implements MealService {
         mealRepository.findAllByDailyMenu(dailyMenu).ifPresent(meals ->
                meals.forEach(meal -> {
                    mealDtos.add(MealDto.builder()
+                                   .id(meal.getId())
                                    .description(meal.getDescription())
                                    .mealPeriod(meal.getMealPeriod())
                                    .mealTime(meal.getMealTime())
@@ -49,6 +51,7 @@ public class MealServiceImplement implements MealService {
      * */
     public MealDto newMeal(MealDto mealDto) {
         Meal meal = Meal.builder()
+                .id(mealDto.getId())
                 .dailyMenu(DailyMenu.builder()
                         .id(mealDto.getDailyMenu().getId()).build())
                 .mealPeriod(mealDto.getMealPeriod())

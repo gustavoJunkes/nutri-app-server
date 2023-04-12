@@ -1,13 +1,11 @@
 package com.nutriapp.resource;
 
-import com.nutriapp.domain.DailyMenu;
 import com.nutriapp.domain.WeekDayEnum;
 import com.nutriapp.dto.DailyMenuDto;
 import com.nutriapp.service.dailymenu.DailyMenuService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -37,9 +35,9 @@ public class DailyMenuResource {
         return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
-    @PostMapping("/new")
-    public ResponseEntity<DailyMenuDto> create(@RequestBody DailyMenuDto dailyMenu) {
-        return new ResponseEntity<>(dailyMenuService.create(dailyMenu), HttpStatus.CREATED);
+    @PostMapping("/save")
+    public ResponseEntity<DailyMenuDto> save(@RequestBody DailyMenuDto dailyMenu) {
+        return new ResponseEntity<>(dailyMenuService.save(dailyMenu), HttpStatus.CREATED);
     }
 
 }

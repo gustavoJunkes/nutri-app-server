@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping("/api/v1/food")
 @RestController
 @AllArgsConstructor
@@ -19,6 +21,11 @@ public class FoodResource {
    @PostMapping("/save")
    public ResponseEntity<FoodDto> save(@RequestBody FoodDto foodDto) {
       return new ResponseEntity<>(foodService.save(foodDto), HttpStatus.CREATED);
+   }
+
+   @GetMapping("/list")
+   public ResponseEntity<List<FoodDto>> list() {
+      return new ResponseEntity<>(foodService.list(), HttpStatus.OK);
    }
 
 }

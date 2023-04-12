@@ -1,12 +1,13 @@
 package com.nutriapp.service.dailymenu;
 
+import com.nutriapp.auth.AuthenticationFacade;
+import com.nutriapp.auth.User;
 import com.nutriapp.domain.DailyMenu;
 import com.nutriapp.domain.WeekDayEnum;
 import com.nutriapp.domain.WeeklyMenu;
 import com.nutriapp.dto.DailyMenuDto;
 import com.nutriapp.dto.WeeklyMenuDto;
 import com.nutriapp.repository.DailyMenuRepository;
-import com.nutriapp.repository.WeeklyMenuRepository;
 import com.nutriapp.service.meal.MealService;
 import com.nutriapp.service.weeklymenu.WeeklyMenuService;
 import lombok.AllArgsConstructor;
@@ -15,10 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -27,6 +25,8 @@ public class DailyMenuService {
     private DailyMenuRepository dailyMenuRepository;
     private MealService mealService;
     private WeeklyMenuService weeklyMenuService;
+
+    private AuthenticationFacade authenticationFacade;
 
     public List<DailyMenuDto> list() {
 
@@ -37,7 +37,9 @@ public class DailyMenuService {
 
     public DailyMenuDto findByDate(LocalDate date) {
 
-        var dailyMenuOpt= dailyMenuRepository.findByDate(date);
+        User user = (User) authenticationFacade.getAuthentication().getPrincipal();
+
+        var dailyMenuOpt = dailyMenuRepository.findByDateAndUser(date, user);
 
         if (dailyMenuOpt.isPresent()) {
             return DailyMenuDto.builder()
@@ -53,13 +55,15 @@ public class DailyMenuService {
      * Find the DailyMenu by week day and WeeklyMenu
      * */
     public DailyMenuDto findByWeekDay(WeekDayEnum weekDay, String weeklyMenuId) {
+        User user = (User) authenticationFacade.getAuthentication().getPrincipal();
+
         // find current WeeklyMenu
         val weeklyMenu = weeklyMenuService.findById(weeklyMenuId);
 
         if (Objects.isNull(weeklyMenu))
             throw new IllegalArgumentException("No weekly menu found");
 
-        var dailyMenu =  dailyMenuRepository.findFirstByWeekDay(weekDay);//.orElse(newDailyMenu(weekDay, weeklyMenu));
+        var dailyMenu =  dailyMenuRepository.getByWeekDayAndAndWeeklyMenuAndUser(weekDay, UUID.fromString(weeklyMenuId), user.getId());
 
         if (dailyMenu.isEmpty()) {
             dailyMenu = Optional.of(newDailyMenu(weekDay, weeklyMenu));
@@ -76,9 +80,10 @@ public class DailyMenuService {
                 .build();
     }
 
-    public DailyMenuDto create(DailyMenuDto dailyMenu) {
+    public DailyMenuDto save(DailyMenuDto dailyMenu) {
         var createdDalyMenu = dailyMenuRepository.save(
                 DailyMenu.builder()
+                        .id(dailyMenu.getId())
                         .weeklyMenu(WeeklyMenu.builder().id(dailyMenu.getWeeklyMenu().getId()).build())
                         .weekDay(dailyMenu.getWeekDay())
                         .date(dailyMenu.getDate())
