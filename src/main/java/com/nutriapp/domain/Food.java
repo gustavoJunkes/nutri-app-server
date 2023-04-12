@@ -1,9 +1,7 @@
 package com.nutriapp.domain;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -11,6 +9,8 @@ import java.util.List;
 @Setter
 @Entity
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Food {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -21,6 +21,9 @@ public class Food {
     private double proteins;
     private double fat;
     private double carbo;
+
+    @Enumerated(EnumType.STRING)
+    private UnityEnum unity;
 
     @Enumerated(EnumType.STRING)
     DayTimeEnum bestEatPeriod;
